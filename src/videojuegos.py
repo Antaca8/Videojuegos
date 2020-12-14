@@ -6,6 +6,10 @@ Created on 13 nov. 2020
 '''
 import csv
 
+from collections import namedtuple
+
+juego = namedtuple("Juego", "Rank, Name, Platform, Year, Genre, Publisher, NA_Sales, EU_Sales, JP_Sales, Other_Sales, Global_Sales")
+
 def lee_juegos(fichero):
     juegos=[]
     with open (fichero, encoding = 'utf-8') as f:
@@ -19,20 +23,20 @@ def lee_juegos(fichero):
             JP_Sales = float(JP_Sales)
             Other_Sales = float(Other_Sales)
             Global_Sales = float(Global_Sales)
-            juegos.append((Rank, Name, Platform, Year, Genre, Publisher, NA_Sales, EU_Sales, JP_Sales, Other_Sales, Global_Sales))
+            juegos.append(juego(Rank, Name, Platform, Year, Genre, Publisher, NA_Sales, EU_Sales, JP_Sales, Other_Sales, Global_Sales))
     return juegos
 
 def num_distribuidoras(lista_juegos):
     conj = set()
-    for _, _, _, _, _, Publisher, _, _, _, _, _ in lista_juegos:
-        conj.add(Publisher)
+    for juego in lista_juegos:
+        conj.add(juego.Publisher)
     return len(conj)
 
 def juegos_distribuidora_anyo(lista_juegos, publisher, anyo):
     filtro = []
-    for _, Name, _, Year, _, Publisher, _, _, _, _, _ in lista_juegos:
-        if Publisher == publisher and Year == anyo:
-            filtro.append(Name)
+    for juego in lista_juegos:
+        if juego.Publisher == publisher and juego.Year == anyo:
+            filtro.append(juego.Name)
     return filtro
         
 def obten_plataformas(lista_juegos):
@@ -47,3 +51,18 @@ def filtrar_por_genero(lista_juegos, genre):
         if Genre == genre:
             filtro.append(Name)
     return filtro
+
+def num_juegos_mas_ventas_JP(lista_juegos):
+    cont = 0
+    for t_juego in lista_juegos:
+        if t_juego.JP_Sales > t_juego.NA_Sales:
+            cont+=1
+    return cont
+
+def juego_mas_antiguo(lista_juegos):
+    #return min(juego for juego in lista_juegos, key=lambda juego:juego.Year) #tupla juego 
+    anyo_menor = min(juego.Year for juego in lista_juegos)
+    return [juego for juego in lista_juegos if juego.Year == anyo_menor]
+    
+    
+    
